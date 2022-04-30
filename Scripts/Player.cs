@@ -10,6 +10,9 @@ public class Player : KinematicBody2D
 	[Export]
 	public float speed = 1;
 	
+	[Export]
+	public float yLimit = 260;
+	
 	private Sprite sprite;
 	private AnimationPlayer animator;
 	
@@ -24,6 +27,7 @@ public class Player : KinematicBody2D
 		animator = GetChild(1) as AnimationPlayer;
 
 		animator.Play("Idle");
+		
 	}
 
 	public override void _PhysicsProcess(float delta)
@@ -34,7 +38,9 @@ public class Player : KinematicBody2D
 	public override void _Input(InputEvent inputEvent)
 	{
 		
-		if (inputEvent is InputEventMouseButton eventMouseButton)
+		InputEventMouseButton mouseEvent = inputEvent as InputEventMouseButton;
+		
+		if (mouseEvent != null && mouseEvent.ButtonIndex == (int)ButtonList.Right && mouseEvent.IsPressed())
 			GetTarget(GetViewport().GetMousePosition());
 		
 	}
@@ -68,6 +74,9 @@ public class Player : KinematicBody2D
 	{
 
 		targetPos = position;
+		
+		if(targetPos.y < yLimit)
+			targetPos.y = yLimit;
 
 		moving = true;
 

@@ -1,8 +1,25 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Resources/Characters/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Resources/Environment/Environment.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Resources/Box/Box.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Resources/Items/ItemPrefab.tscn" type="PackedScene" id=4]
 
 [node name="Game" type="Node2D"]
 
-[node name="Player" parent="." instance=ExtResource( 1 )]
-position = Vector2( 270, 316 )
+[node name="Environment" parent="." instance=ExtResource( 2 )]
+position = Vector2( 310, 358 )
+
+[node name="YSort" type="YSort" parent="."]
+
+[node name="Box" parent="YSort" instance=ExtResource( 3 )]
+position = Vector2( 311, 304 )
+
+[node name="Player" parent="YSort" instance=ExtResource( 1 )]
+position = Vector2( 273, 306 )
+
+[node name="Item" parent="." instance=ExtResource( 4 )]
+position = Vector2( 309, 213 )
+
+[connection signal="_OnBoxOpen" from="YSort/Box" to="Item" method="_OnBoxOpen"]
+[connection signal="_OnFadeOut" from="Item" to="YSort/Box" method="_OnFadeOut"]
