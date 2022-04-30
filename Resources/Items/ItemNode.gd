@@ -14,6 +14,8 @@ func _ready():
 	fadedOut = true
 	$Sprite.visible = !fadedOut
 	$RichTextLabel.visible = !fadedOut
+	$Light2D.visible = !fadedOut
+
 	timer = 0
 
 func _process(delta):
@@ -27,18 +29,31 @@ func _process(delta):
 		fadedOut = true
 		$Sprite.visible = !fadedOut
 		$RichTextLabel.visible = !fadedOut
+		$Light2D.visible = !fadedOut
+
 		emit_signal("_OnFadeOut")
 	
 	
 
 func Build(item):
 	
-	$RichTextLabel.text = item.name
+	if(item == null):
+		
+			
+		$RichTextLabel.bbcode_text = "[center]" + "Nothing found in the box..."
+		fadedOut = false
+		$RichTextLabel.visible = !fadedOut
+		
+		return
+		
+	$RichTextLabel.bbcode_text = "[center]" + item.name
+#	$RichTextLabel.hint_tooltip = item.price as String
 	$Sprite.texture = item.texture
 	
 	fadedOut = false
 	$Sprite.visible = !fadedOut
 	$RichTextLabel.visible = !fadedOut
+	$Light2D.visible = !fadedOut
 
 
 func _OnBoxOpen(item):

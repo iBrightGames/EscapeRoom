@@ -6,19 +6,28 @@ extends Area2D
 # var b = "text"
 
 signal _OnBoxOpen(item)
+signal _MoneyChanged(money)
 
 export(float) var itemChance = 0.8
 export(Array, Resource) var possibleItems
+export(int) var price
+
+export(AudioStream) var failAudio
 
 export(Resource) var currentItem
 
 var clickOk = true
 var animBackward = false
 
+var money = 100
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	
+	randomize()
 	PullNewItem()
+	
+	emit_signal("_MoneyChanged", money)
 	
 
 
@@ -37,12 +46,18 @@ func PullNewItem():
 
 func ReleaseItem():
 	
-	if currentItem == null:
-		print("You found nothing in the box...")
-		$AnimationPlayer.play_backwards("Box_Open")
+	emit_signal("_OnBoxOpen", currentItem)
+	
+	if(currentItem == null):
+		$AudioStreamPlayer.stream = failAudio
+		$AudioStreamPlayer.play()
 	else:
-		print("You have found: " + (currentItem as Item).name)
-		emit_signal("_OnBoxOpen", currentItem)
+		$AudioStreamPlayer.stream = currentItem.audio
+		$AudioStreamPlayer.play()
+		
+		money += currentItem.price
+	
+		emit_signal("_MoneyChanged", money)
 	
 
 func _OnInputEvent(viewport, event, shape_idx):
@@ -51,9 +66,16 @@ func _OnInputEvent(viewport, event, shape_idx):
 	
 	if mouseEvent != null && mouseEvent.button_index == BUTTON_LEFT && event.is_pressed() && clickOk:
 		
-		
-		$AnimationPlayer.play("Box_Open")
-		
+		if money >= price:
+			
+			money -= price
+	
+			emit_signal("_MoneyChanged", money)
+			
+			$AnimationPlayer.play("Box_Open")
+			
+		else:
+			print("Not enough money")
 #		ReleaseItem()
 #		PullItem()
 		
@@ -69,7 +91,6 @@ func _OnAnimationFinished(anim_name):
 	else:
 		animBackward = false
 		clickOk = true
-		print("Box Ready")
 		
 	
 
